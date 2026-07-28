@@ -20,7 +20,10 @@ const httpsOptions = hasTrustedCerts
     }
   : undefined
 
+const base = process.env.GITHUB_PAGES === 'true' ? '/sengoku-ktv/' : '/'
+
 export default defineConfig({
+  base,
   preview: {
     host: '0.0.0.0',
     port: 4173,
@@ -43,8 +46,8 @@ export default defineConfig({
         name: '戰國時代',
         short_name: '戰國時代',
         description: 'KTV 合戰轉盤小遊戲',
-        start_url: '/',
-        scope: '/',
+        start_url: base,
+        scope: base,
         id: 'sengoku-ktv',
         display: 'standalone',
         orientation: 'portrait',
@@ -53,25 +56,25 @@ export default defineConfig({
         theme_color: '#b91c1c',
         icons: [
           {
-            src: '/icons/icon-192.png',
+            src: `${base}icons/icon-192.png`,
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/icons/apple-touch-icon.png',
+            src: `${base}icons/apple-touch-icon.png`,
             sizes: '180x180',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/icons/icon-512.png',
+            src: `${base}icons/icon-512.png`,
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/icons/icon-512.png',
+            src: `${base}icons/icon-512.png`,
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',

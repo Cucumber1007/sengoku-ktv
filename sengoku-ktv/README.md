@@ -15,6 +15,14 @@ npm run dev
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
+## 線上版本（GitHub Pages）
+
+部署完成後網址：
+
+**https://cucumber1007.github.io/sengoku-ktv/**
+
+推送至 `cursor/sengoku-ktv-pwa` 或 `main` 分支會自動部署。
+
 ## 手機安裝測試（正式 build）
 
 ### 離線可用（必須）
