@@ -37,7 +37,7 @@ export function Wheel({
         : '點擊轉盤開戰'
 
   return (
-    <section className="wheel-section" aria-label="轉盤">
+    <section className="wheel-section" aria-label="轉盤" data-guide="wheel">
       <button
         type="button"
         className="wheel-hit"

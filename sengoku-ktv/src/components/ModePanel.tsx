@@ -4,6 +4,7 @@ import type { AppSettings } from '../types/wheel'
 interface ModePanelProps {
   settings: AppSettings
   onChange: (settings: AppSettings) => void
+  forceOpen?: boolean
 }
 
 const MODES: { key: keyof AppSettings; label: string; description: string }[] = [
@@ -20,17 +21,18 @@ function getModeSummary(settings: AppSettings): string {
   return active.length > 0 ? active.join('、') : '標準模式'
 }
 
-export function ModePanel({ settings, onChange }: ModePanelProps) {
+export function ModePanel({ settings, onChange, forceOpen = false }: ModePanelProps) {
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const listId = useId()
+  const isOpen = forceOpen || open
 
   const toggle = (key: keyof AppSettings) => {
     onChange({ ...settings, [key]: !settings[key] })
   }
 
   useEffect(() => {
-    if (!open) return
+    if (!isOpen || forceOpen) return
 
     const handlePointerDown = (event: PointerEvent) => {
       if (!panelRef.current?.contains(event.target as Node)) {
@@ -40,28 +42,28 @@ export function ModePanel({ settings, onChange }: ModePanelProps) {
 
     document.addEventListener('pointerdown', handlePointerDown)
     return () => document.removeEventListener('pointerdown', handlePointerDown)
-  }, [open])
+  }, [isOpen, forceOpen])
 
   return (
-    <section className="mode-panel" aria-label="模式設定" ref={panelRef}>
+    <section className="mode-panel" aria-label="模式設定" ref={panelRef} data-guide="modes">
       <button
         type="button"
         className="mode-panel__trigger"
         onClick={() => setOpen((prev) => !prev)}
-        aria-expanded={open}
+        aria-expanded={isOpen}
         aria-controls={listId}
       >
         <span className="mode-panel__trigger-label">模式設定</span>
         <span className="mode-panel__summary">{getModeSummary(settings)}</span>
-        <span className={`mode-panel__chevron ${open ? 'mode-panel__chevron--open' : ''}`}>
+        <span className={`mode-panel__chevron ${isOpen ? 'mode-panel__chevron--open' : ''}`}>
           ▾
         </span>
       </button>
 
       <div
         id={listId}
-        className={`mode-panel__dropdown ${open ? 'mode-panel__dropdown--open' : ''}`}
-        hidden={!open}
+        className={`mode-panel__dropdown ${isOpen ? 'mode-panel__dropdown--open' : ''}`}
+        hidden={!isOpen}
       >
         <div className="mode-panel__grid">
           {MODES.map(({ key, label, description }) => (

@@ -15,7 +15,7 @@ export function Header({ settings }: HeaderProps) {
   const activeModes = MODE_LABELS.filter(({ key }) => settings[key])
 
   return (
-    <header className="header">
+    <header className="header" data-guide="brand">
       <div className="header__brand">
         <h1 className="header__title">戰國時代</h1>
         <p className="header__subtitle">KTV 合戰轉盤</p>

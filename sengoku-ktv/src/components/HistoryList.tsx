@@ -24,7 +24,7 @@ export function HistoryList({ records, onClear }: HistoryListProps) {
   }
 
   return (
-    <section className="history" aria-label="歷史紀錄">
+    <section className="history" aria-label="歷史紀錄" data-guide="history">
       <div className="history__header">
         <h2 className="section-title">歷史紀錄</h2>
         <button

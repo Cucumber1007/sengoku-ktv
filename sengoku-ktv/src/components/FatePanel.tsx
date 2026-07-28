@@ -10,6 +10,7 @@ interface FatePanelProps {
   disabledIds: string[]
   onCustomItemsChange: (items: WheelItem[]) => void
   onDisabledIdsChange: (ids: string[]) => void
+  forceOpen?: boolean
 }
 
 const CATEGORY_OPTIONS: WheelCategory[] = [
@@ -28,6 +29,7 @@ export function FatePanel({
   disabledIds,
   onCustomItemsChange,
   onDisabledIdsChange,
+  forceOpen = false,
 }: FatePanelProps) {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
@@ -35,12 +37,13 @@ export function FatePanel({
   const [category, setCategory] = useState<WheelCategory>('neutral')
   const panelRef = useRef<HTMLDivElement>(null)
   const listId = useId()
+  const isOpen = forceOpen || open
 
   const { enabled, total } = countEnabledItems(allItems, settings, disabledIds)
   const disabledSet = new Set(disabledIds)
 
   useEffect(() => {
-    if (!open) return
+    if (!isOpen || forceOpen) return
 
     const handlePointerDown = (event: PointerEvent) => {
       if (!panelRef.current?.contains(event.target as Node)) {
@@ -50,7 +53,7 @@ export function FatePanel({
 
     document.addEventListener('pointerdown', handlePointerDown)
     return () => document.removeEventListener('pointerdown', handlePointerDown)
-  }, [open])
+  }, [isOpen, forceOpen])
 
   const toggleItem = (id: string) => {
     if (disabledSet.has(id)) {
@@ -76,27 +79,27 @@ export function FatePanel({
   }
 
   return (
-    <section className="mode-panel fate-panel" aria-label="命運管理" ref={panelRef}>
+    <section className="mode-panel fate-panel" aria-label="命運管理" ref={panelRef} data-guide="fate">
       <button
         type="button"
         className="mode-panel__trigger"
         onClick={() => setOpen((prev) => !prev)}
-        aria-expanded={open}
+        aria-expanded={isOpen}
         aria-controls={listId}
       >
         <span className="mode-panel__trigger-label">命運管理</span>
         <span className="mode-panel__summary">
           {enabled}/{total} 啟用
         </span>
-        <span className={`mode-panel__chevron ${open ? 'mode-panel__chevron--open' : ''}`}>
+        <span className={`mode-panel__chevron ${isOpen ? 'mode-panel__chevron--open' : ''}`}>
           ▾
         </span>
       </button>
 
       <div
         id={listId}
-        className={`mode-panel__dropdown ${open ? 'mode-panel__dropdown--open' : ''}`}
-        hidden={!open}
+        className={`mode-panel__dropdown ${isOpen ? 'mode-panel__dropdown--open' : ''}`}
+        hidden={!isOpen}
       >
         <div className="fate-panel__section">
           <h3 className="fate-panel__heading">自訂命運</h3>

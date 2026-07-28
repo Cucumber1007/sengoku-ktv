@@ -1,5 +1,6 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { FatePanel } from './components/FatePanel'
+import { GuideTour } from './components/GuideTour'
 import { Header } from './components/Header'
 import { HistoryList } from './components/HistoryList'
 import { ModePanel } from './components/ModePanel'
@@ -10,6 +11,8 @@ import { useWheel } from './hooks/useWheel'
 import { DEFAULT_SETTINGS } from './types/wheel'
 import type { AppSettings, WheelItem } from './types/wheel'
 import './styles.css'
+
+const GUIDE_SEEN_KEY = 'sengoku-guide-seen'
 
 function App() {
   const [settings, setSettings] = useLocalStorage<AppSettings>(
@@ -24,6 +27,8 @@ function App() {
     'sengoku-disabled-ids',
     [],
   )
+  const [guideOpen, setGuideOpen] = useState(false)
+  const [guidePanel, setGuidePanel] = useState<'modes' | 'fate' | null>(null)
 
   const {
     status,
@@ -37,6 +42,16 @@ function App() {
     spinDurationMs,
   } = useWheel(settings, customItems, disabledIds)
 
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(GUIDE_SEEN_KEY) !== '1') {
+        setGuideOpen(true)
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
   const handleSettingsChange = useCallback(
     (next: AppSettings) => {
       setSettings(next)
@@ -44,11 +59,45 @@ function App() {
     [setSettings],
   )
 
+  const openGuide = useCallback(() => {
+    if (status === 'result') dismissResult()
+    setGuideOpen(true)
+  }, [status, dismissResult])
+
+  const closeGuide = useCallback(() => {
+    setGuideOpen(false)
+    setGuidePanel(null)
+    try {
+      localStorage.setItem(GUIDE_SEEN_KEY, '1')
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
+  const handleOpenPanel = useCallback((panel: 'modes' | 'fate' | null) => {
+    setGuidePanel(panel)
+  }, [])
+
   return (
     <div className="app">
+      <button
+        type="button"
+        className="help-button"
+        data-guide="help"
+        onClick={openGuide}
+        aria-label="使用說明"
+        title="使用說明"
+      >
+        ?
+      </button>
+
       <Header settings={settings} />
       <main className="app__main">
-        <ModePanel settings={settings} onChange={handleSettingsChange} />
+        <ModePanel
+          settings={settings}
+          onChange={handleSettingsChange}
+          forceOpen={guidePanel === 'modes'}
+        />
         <FatePanel
           settings={settings}
           allItems={allItems}
@@ -56,6 +105,7 @@ function App() {
           disabledIds={disabledIds}
           onCustomItemsChange={setCustomItems}
           onDisabledIdsChange={setDisabledIds}
+          forceOpen={guidePanel === 'fate'}
         />
         <Wheel
           status={status}
@@ -73,6 +123,11 @@ function App() {
           onClose={dismissResult}
         />
       )}
+      <GuideTour
+        open={guideOpen}
+        onClose={closeGuide}
+        onOpenPanel={handleOpenPanel}
+      />
     </div>
   )
 }
