@@ -69,6 +69,10 @@ export function useWheel(
     }, SPIN_DURATION_MS)
   }, [candidates, historyIds, status])
 
+  const dismissResult = useCallback(() => {
+    setStatus('idle')
+  }, [])
+
   const clearHistory = useCallback(() => {
     if (spinTimerRef.current) clearTimeout(spinTimerRef.current)
     clearHistoryAndLastResult()
@@ -85,6 +89,7 @@ export function useWheel(
     candidates,
     allItems,
     spin,
+    dismissResult,
     clearHistory,
     spinDurationMs: SPIN_DURATION_MS,
   }

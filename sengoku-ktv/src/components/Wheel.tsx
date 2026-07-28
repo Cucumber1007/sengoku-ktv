@@ -28,14 +28,13 @@ export function Wheel({
     setRotation((prev) => prev + extraAngle)
   }, [status])
 
-  const hint =
-    status === 'result' && result
-      ? `命運已定：${result.title}`
-      : isSpinning
-        ? '合戰中…'
-        : candidateCount === 0
-          ? '無可用效果'
-          : '點擊轉盤開戰'
+  const hint = isSpinning
+    ? '合戰中…'
+    : candidateCount === 0
+      ? '無可用效果'
+      : result
+        ? `命運已定：${result.title}`
+        : '點擊轉盤開戰'
 
   return (
     <section className="wheel-section" aria-label="轉盤">
@@ -71,7 +70,7 @@ export function Wheel({
       </button>
 
       <p
-        className={`wheel-hint ${status === 'result' ? 'wheel-hint--result' : ''}`}
+        className={`wheel-hint ${result && !isSpinning ? 'wheel-hint--result' : ''}`}
         aria-live="polite"
       >
         {hint}

@@ -32,6 +32,7 @@ function App() {
     candidates,
     allItems,
     spin,
+    dismissResult,
     clearHistory,
     spinDurationMs,
   } = useWheel(settings, customItems, disabledIds)
@@ -63,11 +64,15 @@ function App() {
           spinDurationMs={spinDurationMs}
           onSpin={spin}
         />
-        {result && (
-          <ResultCard item={result} visible={status === 'result'} />
-        )}
         <HistoryList records={history} onClear={clearHistory} />
       </main>
+      {result && (
+        <ResultCard
+          item={result}
+          visible={status === 'result'}
+          onClose={dismissResult}
+        />
+      )}
     </div>
   )
 }
