@@ -26,7 +26,8 @@
 
 - 每首歌都是所有人一句一句輪流唱。
 - 基本玩法不會有「跳過」這種狀況。
-- 遊戲效果可以改變下一首歌的唱歌安排，但必須簡單明確。
+- 遊戲效果可以改變**下一首預排歌曲**的唱歌安排，或觸發**插播**，但必須簡單明確。
+- 歌單已預點，**不能指定「下一首要唱哪首」**；控場改以**插播**取代選歌。
 - 可用單位只有：
   - 一句
   - 第一句
@@ -34,10 +35,17 @@
   - 第一個副歌
   - 副歌第一句
   - 整首歌
+  - 插播（加點一首）
   - 投票階段
   - 轉盤效果本身
 
-### 2.3 不適合出現的規則
+### 2.3 插播規則
+
+- **插播**指：在下一首預排歌曲之前，加點一首自己想唱的歌。
+- 插播後，原本預排隊列仍照順序進行。
+- 與插播相關的效果（如限定類型、限定歌手）僅在執行插播時生效。
+
+### 2.4 不適合出現的規則
 
 避免以下類型的效果：
 
@@ -45,19 +53,20 @@
 - 「下一首歌你不能降 Key，除非全場同意」這類影響整首歌設定但又不是單人可控的規則
 - 需要判斷「最高音」、「最難的地方」、「某一段」的規則
 - 太多額外表演，例如偶像自我介紹、新聞主播評論、過度中二宣言等
-- 跳過、逃避、免唱類規則
+- 跳過、逃避、免唱類規則（**例外**：明確限定的單人福利，如「旁觀不亂」僅負責切歌）
+- 效果轉移給他人（被投者已轉盤，不可再轉給投票者）
 - 太曖昧的互動效果
 
-### 2.4 適合出現的規則
+### 2.5 適合出現的規則
 
 可以出現以下類型：
 
-- 下一首歌由某人指定
+- 插播一首自己想唱的歌（可限定類型或歌手）
 - 下一首歌由某人指定誰唱第一句
 - 下一首歌由某人指定唱歌順序
 - 下一首歌由某人獨自 solo
 - 下一首歌第一個副歌由某人 solo
-- 某人多唱一句
+- 某人多唱一句或少唱（福利）
 - 某人重唱剛剛最慘的一句
 - 某人取得下輪投票特權
 - 某人喝一小口酒或飲料
@@ -296,379 +305,52 @@ export const wheelItems: WheelItem[] = [
 
 ---
 
-## 8. 第一版轉盤項目
+## 8. 轉盤項目（50 個）
 
-### 8.1 福利 / 控場類
+完整資料維護於 [`sengoku-ktv/src/data/wheelItems.ts`](sengoku-ktv/src/data/wheelItems.ts)。
 
-```ts
-{
-  id: "tenka-fubu",
-  title: "天下布武",
-  description: "下一首歌由你指定",
-  category: "control",
-  tags: ["福利", "選歌"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 1
-}
-```
+### 8.1 分類統計
 
-```ts
-{
-  id: "senjo-sentakuken",
-  title: "戰場選擇權",
-  description: "你指定下一首歌類型，例如情歌、搖滾、動漫歌、老歌",
-  category: "control",
-  tags: ["福利", "選歌"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 1
-}
-```
+| 分類 | 數量 | 說明 |
+|------|------|------|
+| control | 15 | 插播、指定唱歌順序/段落、句位限制 |
+| singing_reward | 9 | 特權向福利（含投票特權與下一首安排） |
+| singing_penalty | 11 | 唱歌懲罰 |
+| vote | 4 | 投票相關（盡量少影響後續投票，免死金牌除外） |
+| drink | 5 | 酒水、補水 |
+| food | 5 | 時序／社交食物梗（不假設進食受限制） |
+| neutral | 1 | 休息 |
+| **合計** | **50** | |
 
-```ts
-{
-  id: "kadan-fusa",
-  title: "歌單封鎖",
-  description: "下一首歌不能點某位歌手的歌",
-  category: "control",
-  tags: ["福利", "限制"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
+### 8.2 修訂摘要
+
+**改為插播（4 個）：** 天下布武、戰場選擇權、歌單封鎖、宿敵指定
+
+**已移除／替換：**
+- 本能寺之變（效果轉移，不符合流程）
+- 天下大赦（與全軍補水令重複）
+- 公開表決（投票本就公開，無效）
+- 暗中結盟（「指定不能投你」無實質約束）
+- 補給特權等「可吃／優先選」空洞食物福利
+- singing_reward 中「多唱」與控場重複項（連勝三句、犒賞時刻、副歌點將）
+- 影之否決／再投軍令改為控場（句位封鎖、逆序軍令），避免無謂影響後續投票
+
+**福利／投票重點：**
+- singing_reward：獨裁轉盤、免戰牌、改判特權、評定裁決（免輪）、緩兵之計、旁觀不亂、換將特權等
+- 投票保留：免死金牌、德川忍耐、復仇之刃、護駕令
+- 食物：邊戰補給、齊咬號令、投餵之儀、禁食合戰、傳糧一巡
+
+### 8.3 資料格式
 
 ```ts
-{
-  id: "shukuteki-shitei",
-  title: "宿敵指定",
-  description: "下一首歌必須點某位歌手的歌",
-  category: "control",
-  tags: ["福利", "選歌"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "bakufu-kaikyoku",
-  title: "幕府開局",
-  description: "下一首歌由你指定誰唱第一句",
-  category: "control",
-  tags: ["福利", "唱歌順序"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: true },
-  weight: 1
-}
-```
-
-```ts
-{
-  id: "daimyo-chohei",
-  title: "大名調兵",
-  description: "下一首歌由你指定唱歌順序",
-  category: "control",
-  tags: ["福利", "唱歌順序"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: true },
-  weight: 1
-}
-```
-
-```ts
-{
-  id: "fukuka-haken",
-  title: "副歌霸權",
-  description: "下一首歌第一個副歌由你指定誰唱",
-  category: "control",
-  tags: ["福利", "副歌"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: true },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "gassen-aranji",
-  title: "合戰安排",
-  description: "下一首歌第一個副歌由你指定兩個人一起唱",
-  category: "control",
-  tags: ["福利", "副歌", "合唱"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: true },
-  weight: 0.8
-}
-```
-
----
-
-### 8.2 唱歌懲罰類
-
-```ts
-{
-  id: "kojo-shishu",
-  title: "孤城死守",
-  description: "下一首歌由你獨自 solo",
-  category: "singing_penalty",
-  tags: ["懲罰", "solo"],
-  modes: { alcohol: false, food: false, brutal: true, interaction: false },
-  weight: 0.4
-}
-```
-
-```ts
-{
-  id: "fukuka-shokeijo",
-  title: "副歌處刑場",
-  description: "下一首歌第一個副歌由你 solo",
-  category: "singing_penalty",
-  tags: ["懲罰", "副歌", "solo"],
-  modes: { alcohol: false, food: false, brutal: true, interaction: false },
-  weight: 0.5
-}
-```
-
-```ts
-{
-  id: "ikkiuchi",
-  title: "一騎討",
-  description: "下一首歌第一個副歌由你和指定一人對唱",
-  category: "singing_penalty",
-  tags: ["懲罰", "副歌", "對唱"],
-  modes: { alcohol: false, food: false, brutal: true, interaction: true },
-  weight: 0.6
-}
-```
-
-```ts
-{
-  id: "renzan-niku",
-  title: "連戰兩句",
-  description: "下一首歌第一次輪到你時連唱兩句",
-  category: "singing_penalty",
-  tags: ["懲罰", "多唱一句"],
-  modes: { alcohol: false, food: false, brutal: true, interaction: false },
-  weight: 0.7
-}
-```
-
-```ts
-{
-  id: "haisho-zangyo",
-  title: "敗將加班",
-  description: "下一首歌中，大家可以指定你額外多唱一句，只能一次",
-  category: "singing_penalty",
-  tags: ["懲罰", "多唱一句"],
-  modes: { alcohol: false, food: false, brutal: true, interaction: true },
-  weight: 0.7
-}
-```
-
-```ts
-{
-  id: "senpan-replay",
-  title: "戰犯回放",
-  description: "重唱剛剛自己最慘的一句",
-  category: "singing_penalty",
-  tags: ["懲罰", "重唱"],
-  modes: { alcohol: false, food: false, brutal: true, interaction: false },
-  weight: 0.7
-}
-```
-
-```ts
-{
-  id: "fukuka-zengo",
-  title: "副歌前鋒",
-  description: "下一首歌第一個副歌第一句由你唱",
-  category: "singing_penalty",
-  tags: ["懲罰", "副歌", "第一句"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "bisei-shukaku",
-  title: "尾聲收割",
-  description: "下一首歌最後一句由你唱",
-  category: "singing_penalty",
-  tags: ["懲罰", "最後一句"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
-
----
-
-### 8.3 投票 / 轉盤效果類
-
-```ts
-{
-  id: "menshi-kinpai",
-  title: "免死金牌",
-  description: "下次被投出來時可以免抽一次",
-  category: "vote",
-  tags: ["福利", "投票"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "tokugawa-nintai",
-  title: "德川忍耐",
-  description: "這次效果無效",
-  category: "vote",
-  tags: ["福利", "無效"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "honnouji-no-hen",
-  title: "本能寺之變",
-  description: "效果轉給剛剛投你的人之一",
-  category: "vote",
-  tags: ["反擊", "轉移"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: true },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "fukushu-no-yaiba",
-  title: "復仇之刃",
-  description: "下一輪投票時你的票算兩票",
-  category: "vote",
-  tags: ["福利", "投票"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "anchu-domei",
-  title: "暗中結盟",
-  description: "下一輪投票時，你指定一個人不能投你",
-  category: "vote",
-  tags: ["福利", "投票"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: true },
-  weight: 0.7
-}
-```
-
-```ts
-{
-  id: "tenka-taisha",
-  title: "天下大赦",
-  description: "這次轉盤改成全員補水",
-  category: "vote",
-  tags: ["福利", "補水"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
-
----
-
-### 8.4 酒水 / 拼盤類
-
-```ts
-{
-  id: "haisho-shakushaku",
-  title: "敗將小酌",
-  description: "你喝一小口酒或飲料",
-  category: "drink",
-  tags: ["酒水"],
-  modes: { alcohol: true, food: false, brutal: false, interaction: false },
-  weight: 1
-}
-```
-
-```ts
-{
-  id: "senzen-kanpai",
-  title: "戰前乾杯",
-  description: "下一首歌開始前，全員小口乾杯",
-  category: "drink",
-  tags: ["酒水", "全員"],
-  modes: { alcohol: true, food: false, brutal: false, interaction: false },
-  weight: 0.9
-}
-```
-
-```ts
-{
-  id: "kei-senyu",
-  title: "敬戰友",
-  description: "你指定一個人一起小口乾杯",
-  category: "drink",
-  tags: ["酒水", "指定"],
-  modes: { alcohol: true, food: false, brutal: false, interaction: true },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "zengun-hosui",
-  title: "全軍補水令",
-  description: "全員喝一口水",
-  category: "drink",
-  tags: ["補水", "全員"],
-  modes: { alcohol: false, food: false, brutal: false, interaction: false },
-  weight: 1
-}
-```
-
-```ts
-{
-  id: "hyoro-gan",
-  title: "兵糧丸",
-  description: "你從拼盤選一樣吃一口",
-  category: "food",
-  tags: ["食物", "拼盤"],
-  modes: { alcohol: false, food: true, brutal: false, interaction: false },
-  weight: 1
-}
-```
-
-```ts
-{
-  id: "zengun-shinshoku",
-  title: "全軍進食",
-  description: "全員各吃一口拼盤",
-  category: "food",
-  tags: ["食物", "全員"],
-  modes: { alcohol: false, food: true, brutal: false, interaction: false },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "agemono-no-ran",
-  title: "炸物之亂",
-  description: "你指定一樣拼盤食物，大家一起吃",
-  category: "food",
-  tags: ["食物", "拼盤"],
-  modes: { alcohol: false, food: true, brutal: false, interaction: true },
-  weight: 0.8
-}
-```
-
-```ts
-{
-  id: "hokyu-tokken",
-  title: "補給特權",
-  description: "你可以優先選一樣想吃的拼盤食物",
-  category: "food",
-  tags: ["食物", "福利"],
-  modes: { alcohol: false, food: true, brutal: false, interaction: false },
-  weight: 0.8
+export interface WheelItem {
+  id: string
+  title: string
+  description: string
+  category: WheelCategory
+  tags: string[]
+  modes: { alcohol, food, brutal, interaction }
+  weight: number
 }
 ```
 
